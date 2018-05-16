@@ -55,7 +55,7 @@ public class UserController {
             LOGGER.error(">>> Unable to update. User with id: {} not found.", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatedUser);
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.DELETE)
