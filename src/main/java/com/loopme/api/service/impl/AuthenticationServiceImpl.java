@@ -11,10 +11,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private final UserRepository userRepository;
+    private final UserUtilService userUtilService;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserUtilService userUtilService;
+    public AuthenticationServiceImpl(final UserRepository userRepository, final UserUtilService userUtilService) {
+        this.userRepository = userRepository;
+        this.userUtilService = userUtilService;
+    }
 
     @Override
     public Authentication getAuthentication() {
