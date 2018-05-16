@@ -35,7 +35,7 @@ public class AppController {
     }
 
     @RequestMapping(value = "/app", method = RequestMethod.POST)
-    @PreAuthorize(value = "hasAnyRole('ROLE_PUBLISHER, ADOPS')")
+    @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<AppDto> createApp(@RequestBody @Valid final AppCreateDto app) {
         LOGGER.info(">>> About process create app: '{}'", app);
         AppDto createdApp = appService.createApp(app);
@@ -47,7 +47,7 @@ public class AppController {
     }
 
     @RequestMapping(value = "/app/{id}", method = RequestMethod.PUT)
-    @PreAuthorize(value = "hasAnyRole('ROLE_PUBLISHER, ADOPS')")
+    @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<AppDto> updateApp(@PathVariable("id") final Long id, @RequestBody @Valid final AppCreateDto app) {
         LOGGER.info(">>> About process update app: '{}'", app);
         AppDto updatedApp = appService.updateApp(id, app);
@@ -59,7 +59,7 @@ public class AppController {
     }
 
     @RequestMapping(value = "/app/type", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyRole('ROLE_PUBLISHER, ADOPS')")
+    @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<List<AppType>> getAppType() {
         LOGGER.info(">>> About process get app types");
         List<AppType> appType = appService.getAppType();
@@ -69,8 +69,8 @@ public class AppController {
         return ResponseEntity.status(HttpStatus.CREATED).body(appType);
     }
 
-    @RequestMapping(value = "/app/type/content", method = RequestMethod.GET)
-    @PreAuthorize(value = "hasAnyRole('ROLE_PUBLISHER, ADOPS')")
+    @RequestMapping(value = "/app/content", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<List<ContentType>> getAppContentType() {
         LOGGER.info(">>> About process get app content type");
         List<ContentType> contentType = appService.getContentType();
