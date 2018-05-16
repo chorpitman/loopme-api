@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/api")
@@ -82,9 +84,9 @@ public class AppController {
 
     @RequestMapping(value = "/app/", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
-    public ResponseEntity<List<AppDto>> getApps() {
+    public ResponseEntity<Collection<AppDto>> getApps() {
         LOGGER.info(">>> About process get apps");
-        List<AppDto> apps = appService.findAll();
+        Set<AppDto> apps = appService.findAll();
         if (apps.size() == 0) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
@@ -93,7 +95,7 @@ public class AppController {
 
     @RequestMapping(value = "/app/type/", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
-    public ResponseEntity<List<AppType>> getAppType() {
+    public ResponseEntity<Collection<AppType>> getAppType() {
         LOGGER.info(">>> About process get app types");
         List<AppType> appType = appService.getAppType();
         if (appType.size() == 0) {
@@ -104,7 +106,7 @@ public class AppController {
 
     @RequestMapping(value = "/app/content/", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
-    public ResponseEntity<List<ContentType>> getAppContentType() {
+    public ResponseEntity<Collection<ContentType>> getAppContentType() {
         LOGGER.info(">>> About process get app content type");
         List<ContentType> contentType = appService.getContentType();
         if (contentType.size() == 0) {
