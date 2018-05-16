@@ -42,7 +42,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private UserApprovalHandler userApprovalHandler;
 
     @Override
-    public void configure(final AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+    public void configure(final AuthorizationServerSecurityConfigurer oauthServer) {
         oauthServer
                 .allowFormAuthenticationForClients()
                 // we're allowing access to the token only for clients with 'ROLE_TRUSTED_CLIENT' authority
