@@ -24,16 +24,22 @@ import static java.text.MessageFormat.format;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final PasswordEncoder encoder;
+    private final UserUtilService userUtilService;
+    private final AuthenticationService authenticationService;
+    private final UserConverter userConverter;
+    private final UserRepository userRepository;
+
     @Autowired
-    private PasswordEncoder encoder;
-    @Autowired
-    private UserUtilService userUtilService;
-    @Autowired
-    private AuthenticationService authenticationService;
-    @Autowired
-    private UserConverter userConverter;
-    @Autowired
-    private UserRepository userRepository;
+    public UserServiceImpl(final PasswordEncoder encoder, final UserUtilService userUtilService,
+                           final AuthenticationService authenticationService, final UserConverter userConverter,
+                           final UserRepository userRepository) {
+        this.encoder = encoder;
+        this.userUtilService = userUtilService;
+        this.authenticationService = authenticationService;
+        this.userConverter = userConverter;
+        this.userRepository = userRepository;
+    }
 
     @Transactional
     @Override
@@ -42,7 +48,7 @@ public class UserServiceImpl implements UserService {
         if (Objects.nonNull(foundUser)) {
             return null;
         }
-        validRole(signUpRequest.getRole());
+        checkOperationPermission(signUpRequest.getRole());
         User user = User.builder()
                 .name(signUpRequest.getName())
                 .email(signUpRequest.getEmail())
@@ -59,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public UserDto update(final Long userId, final UserUpdDto userDto) {
         User foundUser = userRepository.findOne(userId);
         userUtilService.nullCheck(foundUser, userId);
-        checkOperationPermission(foundUser);
+        checkOperationPermission(foundUser.getRole());
         foundUser.setName(userDto.getName());
         foundUser.setEmail(userDto.getEmail());
 
@@ -72,7 +78,8 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(foundUser)) {
             return Boolean.FALSE;
         }
-        checkOperationPermission(foundUser);
+        checkUserDeleteHimself(userId, authenticationService.getOperationAuthor());
+        checkOperationPermission(foundUser.getRole());
         userRepository.delete(userId);
 
         return Boolean.TRUE;
@@ -80,7 +87,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findById(final Long userId) {
-        //todo tnink about lazy
         User foundUser = userRepository.findOne(userId);
         if (Objects.isNull(foundUser)) {
             return null;
@@ -90,7 +96,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAll() {
-        //todo tnink about lazy
         List<User> users = userRepository.findAll();
         if (users.size() == 0) {
             return Collections.emptyList();
@@ -99,29 +104,23 @@ public class UserServiceImpl implements UserService {
         return userConverter.convert(users);
     }
 
-    private void validRole(final UserRole userRole) {
+    private void checkOperationPermission(final UserRole userRole) {
         User operationAuthor = authenticationService.getOperationAuthor();
-        //no one can create admin
         if (Objects.equals(UserRole.ROLE_ADMIN, userRole)) {
-            throw new UserException(format("user with email: {0} can not perform operation with admin", operationAuthor.getEmail()));
+            throw new UserException(format("user with email: {0} can not perform operation with admin",
+                    operationAuthor.getEmail()));
         }
-
-        //operator can not create operator
-        if (Objects.equals(UserRole.ROLE_ADOPS, operationAuthor.getRole())) {
-            throw new UserException(format("user with email: {0} can not perform operation with operator", operationAuthor.getEmail()));
+        if (Objects.equals(UserRole.ROLE_ADOPS, operationAuthor.getRole()) &&
+                Objects.equals(UserRole.ROLE_ADOPS, userRole)) {
+            throw new UserException(format("user with email: {0} can not perform operation with operator",
+                    operationAuthor.getEmail()));
         }
     }
 
-    private void checkOperationPermission(final User foundUser) {
-        User operationAuthor = authenticationService.getOperationAuthor();
-        //no one can update admin
-        if (Objects.equals(UserRole.ROLE_ADMIN, foundUser.getRole())) {
-            throw new UserException(format("user with email: {0} can not perform operation with admin", operationAuthor.getEmail()));
-        }
-        //operator can not upd operator
-        if (Objects.equals(UserRole.ROLE_ADOPS, foundUser.getRole()) &&
-                Objects.equals(UserRole.ROLE_ADOPS, operationAuthor.getRole())) {
-            throw new UserException(format("user with email: {0} can not perform operation with operator", operationAuthor.getEmail()));
+    private void checkUserDeleteHimself(Long userId, User operationAuthor) {
+        if (Objects.equals(operationAuthor.getId(), userId)) {
+            throw new UserException(format("user with email: {0} can not delete himself",
+                    operationAuthor.getEmail()));
         }
     }
 }
