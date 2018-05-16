@@ -5,7 +5,6 @@ import com.loopme.api.controller.dto.app.AppDto;
 import com.loopme.api.model.AppType;
 import com.loopme.api.model.ContentType;
 import com.loopme.api.service.AppService;
-import com.loopme.api.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class AppController {
     private final AppService appService;
 
     @Autowired
-    public AppController(final UserService userService, final AppService appService) {
+    public AppController(final AppService appService) {
         this.appService = appService;
     }
 
@@ -40,8 +39,8 @@ public class AppController {
         LOGGER.info(">>> About process create app: '{}'", app);
         AppDto createdApp = appService.createApp(app);
         if (Objects.isNull(createdApp)) {
-//            LOGGER.error(">>> Unable to create. A User with name: {} already exist", user.getName());
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            LOGGER.error(">>> Unable to create app: '{}'", app);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponseEntity.status(HttpStatus.OK).body(createdApp);
     }
@@ -52,10 +51,10 @@ public class AppController {
         LOGGER.info(">>> About process update app: '{}'", app);
         AppDto updatedApp = appService.updateApp(id, app);
         if (Objects.isNull(updatedApp)) {
-            LOGGER.error(">>> Unable to update. A deal with id: {}  does not exist. Or problem with permission", id);
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            LOGGER.error(">>> Unable to update. App with id: {}  does not exist. Or problem with permission", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(updatedApp);
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatedApp);
     }
 
     @RequestMapping(value = "/app/{id}", method = RequestMethod.DELETE)
@@ -81,7 +80,7 @@ public class AppController {
         return ResponseEntity.status(HttpStatus.OK).body(app);
     }
 
-    @RequestMapping(value = "/app/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/app/", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<List<AppDto>> getApps() {
         LOGGER.info(">>> About process get apps");
@@ -100,7 +99,7 @@ public class AppController {
         if (appType.size() == 0) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(appType);
+        return ResponseEntity.status(HttpStatus.OK).body(appType);
     }
 
     @RequestMapping(value = "/app/content", method = RequestMethod.GET)
@@ -111,6 +110,6 @@ public class AppController {
         if (contentType.size() == 0) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(contentType);
+        return ResponseEntity.status(HttpStatus.OK).body(contentType);
     }
 }
