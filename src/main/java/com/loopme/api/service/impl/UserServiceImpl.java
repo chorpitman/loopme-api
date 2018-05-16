@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validRole(final UserRole userRole) {
-        User operationAuthor = getOperationAuthor();
+        User operationAuthor = authenticationService.getOperationAuthor();
         //no one can create admin
         if (Objects.equals(UserRole.ROLE_ADMIN, userRole)) {
             throw new UserException(format("user with email: {0} can not perform operation with admin", operationAuthor.getEmail()));
@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkOperationPermission(final User foundUser) {
-        User operationAuthor = getOperationAuthor();
+        User operationAuthor = authenticationService.getOperationAuthor();
         //no one can update admin
         if (Objects.equals(UserRole.ROLE_ADMIN, foundUser.getRole())) {
             throw new UserException(format("user with email: {0} can not perform operation with admin", operationAuthor.getEmail()));
@@ -123,12 +123,5 @@ public class UserServiceImpl implements UserService {
                 Objects.equals(UserRole.ROLE_ADOPS, operationAuthor.getRole())) {
             throw new UserException(format("user with email: {0} can not perform operation with operator", operationAuthor.getEmail()));
         }
-    }
-
-    private User getOperationAuthor() {
-        User foundUser = userRepository.findByEmail(authenticationService.getAuthentication().getName());
-        userUtilService.nullCheck(foundUser, authenticationService.getAuthentication().getName());
-
-        return foundUser;
     }
 }
