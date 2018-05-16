@@ -27,7 +27,6 @@ import javax.annotation.Resource;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-
     @Resource(name = "userService")
     private CustomUserDetailService userDetailsService;
 
@@ -66,9 +65,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js")
                 .permitAll()
                 .antMatchers("/oauth/token").permitAll()
-                .antMatchers("/api/signup").permitAll()
-                .antMatchers("api/login").permitAll()
-                .antMatchers("/api/**").permitAll()
+//                .antMatchers("/api/signup").permitAll()
+//                .antMatchers("api/login").permitAll()
+//                .antMatchers("/api/**").permitAll()
                 .anyRequest()
                 .authenticated();
 //                .httpBasic()
