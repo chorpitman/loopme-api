@@ -19,8 +19,12 @@ import static java.text.MessageFormat.format;
 
 @Service(value = "userService")
 public class CustomUserDetailService implements UserDetailsService {
+    private final UserRepository userRepository;
+
     @Autowired
-    UserRepository userRepository;
+    public CustomUserDetailService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Transactional(readOnly = true)
     @Override
