@@ -18,10 +18,14 @@ public class Init {
     private static final String USER_EMAIL = "snake@gmail.com";
     private static final UserRole USER_ROLE = UserRole.ROLE_ADMIN;
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder encoder;
+    public Init(final UserRepository userRepository, final PasswordEncoder encoder) {
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+    }
 
     @PostConstruct
     public void init() {
