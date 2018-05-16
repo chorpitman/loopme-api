@@ -12,6 +12,12 @@ public interface AppService {
 
     AppDto updateApp(final Long appId, final AppCreateDto appDto);
 
+    Boolean delete(final Long userId);
+
+    AppDto findById(Long userId);
+
+    List<AppDto> findAll();
+
     List<ContentType> getContentType();
 
     List<AppType> getAppType();

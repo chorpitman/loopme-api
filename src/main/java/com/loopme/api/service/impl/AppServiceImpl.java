@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,6 +64,37 @@ public class AppServiceImpl implements AppService {
         return appConverter.convert(appRepository.save(foundApp));
     }
 
+    @Override
+    public Boolean delete(Long userId) {
+        App foundApp = appRepository.findOne(userId);
+        if (Objects.isNull(foundApp) || !checkAppOwner(foundApp)) {
+            return Boolean.FALSE;
+        }
+        userRepository.delete(userId);
+
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public AppDto findById(Long userId) {
+        //todo tnink about lazy
+        App foundApp = appRepository.findOne(userId);
+        if (Objects.isNull(foundApp)) {
+            return null;
+        }
+        return appConverter.convert(foundApp);
+    }
+
+    @Override
+    public List<AppDto> findAll() {
+        //todo tnink about lazy
+        List<App> apps = appRepository.findAll();
+        if (apps.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        return appConverter.convert(apps);
+    }
 
     @Override
     public List<ContentType> getContentType() {
