@@ -91,7 +91,7 @@ public class AppController {
         return ResponseEntity.status(HttpStatus.OK).body(apps);
     }
 
-    @RequestMapping(value = "/app/type", method = RequestMethod.GET)
+    @RequestMapping(value = "/app/type/", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<List<AppType>> getAppType() {
         LOGGER.info(">>> About process get app types");
@@ -102,7 +102,7 @@ public class AppController {
         return ResponseEntity.status(HttpStatus.OK).body(appType);
     }
 
-    @RequestMapping(value = "/app/content", method = RequestMethod.GET)
+    @RequestMapping(value = "/app/content/", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<List<ContentType>> getAppContentType() {
         LOGGER.info(">>> About process get app content type");
