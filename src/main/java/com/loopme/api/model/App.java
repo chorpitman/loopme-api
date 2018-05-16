@@ -1,5 +1,11 @@
 package com.loopme.api.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -15,9 +21,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Set;
 
-
 @Entity
 @Table(name = "apps")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class App {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
