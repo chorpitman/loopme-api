@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-    private static final String CLIEN_ID = "loopme";
+    private static final String CLIENT_ID = "loopme";
     private static final String CLIENT_SECRET = "loopme-secret";
     private static final String GRANT_TYPE_PASSWORD = "password";
     private static final String REFRESH_TOKEN = "refresh_token";
@@ -54,7 +54,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer configurer) throws Exception {
         configurer
                 .inMemory()
-                .withClient(CLIEN_ID)
+                .withClient(CLIENT_ID)
                 .secret(CLIENT_SECRET)
                 .authorizedGrantTypes(GRANT_TYPE_PASSWORD, REFRESH_TOKEN)
                 .authorities(ROLE_CLIENT, ROLE_TRUSTED_CLIENT)
@@ -65,7 +65,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints
                 .tokenStore(tokenStore).userApprovalHandler(userApprovalHandler)
                 .authenticationManager(authenticationManager);
