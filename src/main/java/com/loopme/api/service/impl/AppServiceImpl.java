@@ -7,6 +7,7 @@ import com.loopme.api.model.App;
 import com.loopme.api.model.AppType;
 import com.loopme.api.model.ContentType;
 import com.loopme.api.model.User;
+import com.loopme.api.model.UserRole;
 import com.loopme.api.repository.AppRepository;
 import com.loopme.api.repository.UserRepository;
 import com.loopme.api.service.AppService;
@@ -18,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class AppServiceImpl implements AppService {
@@ -82,7 +85,6 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public AppDto findById(Long userId) {
-        //todo think about lazy
         App foundApp = appRepository.findOne(userId);
         if (Objects.isNull(foundApp)) {
             return null;
@@ -91,11 +93,20 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public List<AppDto> findAll() {
-        //todo think about lazy
-        List<App> apps = appRepository.findAll();
+    public Set<AppDto> findAll() {
+        Set<App> apps = new HashSet<>();
+        if (isCurrentUserPublisher()) {
+            Set<App> publisherApps = userRepository.findByEmail(authenticationService.getAuthentication().getName()).getApps();
+            apps.addAll(publisherApps);
+        }
+
+        if (!isCurrentUserPublisher()) {
+            List<App> allApps = appRepository.findAll();
+            apps.addAll(allApps);
+        }
+
         if (apps.size() == 0) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
         return appConverter.convert(apps);
@@ -114,5 +125,10 @@ public class AppServiceImpl implements AppService {
     private boolean isAppOwner(final App app) {
         User operationAuthor = authenticationService.getOperationAuthor();
         return Objects.equals(operationAuthor.getId(), app.getUser().getId());
+    }
+
+    private boolean isCurrentUserPublisher() {
+        User operationAuthor = authenticationService.getOperationAuthor();
+        return Objects.equals(UserRole.ROLE_PUBLISHER, operationAuthor.getRole());
     }
 }

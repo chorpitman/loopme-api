@@ -6,6 +6,7 @@ import com.loopme.api.model.AppType;
 import com.loopme.api.model.ContentType;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AppService {
     AppDto createApp(final AppCreateDto appDto);
@@ -16,7 +17,7 @@ public interface AppService {
 
     AppDto findById(Long userId);
 
-    List<AppDto> findAll();
+    Set<AppDto> findAll();
 
     List<ContentType> getContentType();
 
