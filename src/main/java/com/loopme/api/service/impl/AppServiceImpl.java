@@ -23,16 +23,21 @@ import java.util.Objects;
 
 @Service
 public class AppServiceImpl implements AppService {
+    private final AuthenticationService authenticationService;
+    private final UserRepository userRepository;
+    private final AppUtilService appUtilService;
+    private final AppRepository appRepository;
+    private final AppConverter appConverter;
+
     @Autowired
-    private AuthenticationService authenticationService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AppUtilService appUtilService;
-    @Autowired
-    private AppRepository appRepository;
-    @Autowired
-    private AppConverter appConverter;
+    public AppServiceImpl(final AuthenticationService authenticationService, final UserRepository userRepository,
+                          final AppUtilService appUtilService, final AppRepository appRepository, final AppConverter appConverter) {
+        this.authenticationService = authenticationService;
+        this.userRepository = userRepository;
+        this.appUtilService = appUtilService;
+        this.appRepository = appRepository;
+        this.appConverter = appConverter;
+    }
 
     @Transactional
     @Override
@@ -54,7 +59,7 @@ public class AppServiceImpl implements AppService {
     public AppDto updateApp(final Long appId, final AppCreateDto appDto) {
         App foundApp = appRepository.findOne(appId);
         appUtilService.nullCheck(foundApp, appId);
-        if (!checkAppOwner(foundApp)) {
+        if (!isAppOwner(foundApp)) {
             return null;
         }
         foundApp.setName(appDto.getName());
@@ -67,7 +72,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public Boolean delete(Long userId) {
         App foundApp = appRepository.findOne(userId);
-        if (Objects.isNull(foundApp) || !checkAppOwner(foundApp)) {
+        if (Objects.isNull(foundApp) || !isAppOwner(foundApp)) {
             return Boolean.FALSE;
         }
         userRepository.delete(userId);
@@ -77,7 +82,7 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public AppDto findById(Long userId) {
-        //todo tnink about lazy
+        //todo think about lazy
         App foundApp = appRepository.findOne(userId);
         if (Objects.isNull(foundApp)) {
             return null;
@@ -87,7 +92,7 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public List<AppDto> findAll() {
-        //todo tnink about lazy
+        //todo think about lazy
         List<App> apps = appRepository.findAll();
         if (apps.size() == 0) {
             return Collections.emptyList();
@@ -106,8 +111,8 @@ public class AppServiceImpl implements AppService {
         return Arrays.asList(AppType.values());
     }
 
-    private boolean checkAppOwner(final App app) {
+    private boolean isAppOwner(final App app) {
         User operationAuthor = authenticationService.getOperationAuthor();
-        return (Objects.equals(operationAuthor.getId(), app.getUser().getId()));
+        return Objects.equals(operationAuthor.getId(), app.getUser().getId());
     }
 }
