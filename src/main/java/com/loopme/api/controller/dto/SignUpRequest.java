@@ -32,6 +32,6 @@ public class SignUpRequest {
     @Size(message = "user password lengths must be higher or equals 8", min = 6, max = 255)
     private String password;
 
-    @NotBlank(message = "user role can not be blank")
+    @NotNull
     private UserRole role;
 }
