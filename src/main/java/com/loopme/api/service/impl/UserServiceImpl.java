@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findById(Long userId) {
+    public UserDto findById(final Long userId) {
         //todo tnink about lazy
         User foundUser = userRepository.findOne(userId);
         if (Objects.isNull(foundUser)) {

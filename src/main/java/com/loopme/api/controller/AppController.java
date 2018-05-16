@@ -58,6 +58,40 @@ public class AppController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedApp);
     }
 
+    @RequestMapping(value = "/app/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
+    public ResponseEntity<Void> deleteApp(@PathVariable("id") final Long id) {
+        LOGGER.info(">>> About process delete app by id: '{}'", id);
+        if (appService.delete(id)) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
+        LOGGER.error(">>> Unable to delete. App with id: {} not found.", id);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @RequestMapping(value = "/app/{id}", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
+    public ResponseEntity<AppDto> getAppById(@PathVariable("id") final Long id) {
+        LOGGER.info(">>> About process get app by id: '{}'", id);
+        AppDto app = appService.findById(id);
+        if (Objects.isNull(app)) {
+            LOGGER.error(">>> App with id {} not found.", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(app);
+    }
+
+    @RequestMapping(value = "/app/{id}", method = RequestMethod.GET)
+    @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
+    public ResponseEntity<List<AppDto>> getApps() {
+        LOGGER.info(">>> About process get apps");
+        List<AppDto> apps = appService.findAll();
+        if (apps.size() == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(apps);
+    }
+
     @RequestMapping(value = "/app/type", method = RequestMethod.GET)
     @PreAuthorize(value = "hasAnyRole('PUBLISHER, ADOPS')")
     public ResponseEntity<List<AppType>> getAppType() {
