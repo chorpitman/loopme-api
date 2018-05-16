@@ -1,6 +1,6 @@
 package com.loopme.api.controller.dto;
 
-import com.loopme.api.model.App;
+import com.loopme.api.controller.dto.app.AppDto;
 import com.loopme.api.model.UserRole;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,5 +16,5 @@ public class UserDto {
     private String name;
     private String email;
     private UserRole role;
-    private Set<App> apps;
+    private Set<AppDto> apps;
 }
