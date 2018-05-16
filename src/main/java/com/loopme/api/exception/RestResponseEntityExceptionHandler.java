@@ -15,7 +15,14 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     private static final Logger LOGGER = LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
 
     @ExceptionHandler(value = {UserException.class})
-    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+    protected ResponseEntity<Object> handleUserConflict(RuntimeException ex, WebRequest request) {
+        LOGGER.error("404 Status Code " + ex.getMessage());
+        GenericResponse bodyOfResponse = new GenericResponse(ex.getMessage(), ex.getClass().getSimpleName());
+        return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
+    }
+
+    @ExceptionHandler(value = {AppException.class})
+    protected ResponseEntity<Object> handleAppConflict(RuntimeException ex, WebRequest request) {
         LOGGER.error("404 Status Code " + ex.getMessage());
         GenericResponse bodyOfResponse = new GenericResponse(ex.getMessage(), ex.getClass().getSimpleName());
         return handleExceptionInternal(ex, bodyOfResponse, new HttpHeaders(), HttpStatus.CONFLICT, request);
