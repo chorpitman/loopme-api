@@ -4,8 +4,9 @@ import com.loopme.api.controller.dto.app.AppDto;
 import com.loopme.api.model.App;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class AppConverter {
@@ -18,8 +19,8 @@ public class AppConverter {
                 .build();
     }
 
-    public List<AppDto> convert(final List<App> apps) {
-        List<AppDto> appDtoList = new ArrayList<>();
+    public Set<AppDto> convert(final Collection<App> apps) {
+        Set<AppDto> appDtoList = new HashSet<>();
         for (App app : apps) {
             AppDto converted = convert(app);
             appDtoList.add(converted);
