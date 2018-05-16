@@ -73,7 +73,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public Boolean delete(Long userId) {
+    public Boolean delete(final Long userId) {
         App foundApp = appRepository.findOne(userId);
         if (Objects.isNull(foundApp) || !isAppOwner(foundApp)) {
             return Boolean.FALSE;
@@ -84,7 +84,7 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public AppDto findById(Long userId) {
+    public AppDto findById(final Long userId) {
         App foundApp = appRepository.findOne(userId);
         if (Objects.isNull(foundApp)) {
             return null;
