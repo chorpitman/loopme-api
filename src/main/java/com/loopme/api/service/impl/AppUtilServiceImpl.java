@@ -14,7 +14,7 @@ public class AppUtilServiceImpl implements AppUtilService {
     @Override
     public void nullCheck(final App app, final Long appId) {
         if (Objects.isNull(app)) {
-            throw new AppException(format("user with id: {0} does not exist", appId));
+            throw new AppException(format("app with id: {0} does not exist", appId));
         }
     }
 }
