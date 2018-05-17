@@ -5,12 +5,14 @@ import com.loopme.api.model.AppType;
 import com.loopme.api.model.ContentType;
 import com.loopme.api.model.User;
 import com.loopme.api.model.UserRole;
+import com.loopme.api.repository.AppRepository;
 import com.loopme.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -34,11 +36,13 @@ public class Init {
 
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
+    private final AppRepository appRepository;
 
     @Autowired
-    public Init(final UserRepository userRepository, final PasswordEncoder encoder) {
+    public Init(final UserRepository userRepository, final PasswordEncoder encoder, final AppRepository appRepository) {
         this.userRepository = userRepository;
         this.encoder = encoder;
+        this.appRepository = appRepository;
     }
 
     @PostConstruct
@@ -50,7 +54,6 @@ public class Init {
                     .password(encoder.encode(PASSWORD))
                     .email(ADMIN_EMAIL)
                     .role(ADMIN_ROLE)
-                    .apps(getApp(ADOP_NAME))
                     .build();
 
             //create another user
@@ -59,7 +62,6 @@ public class Init {
                     .password(encoder.encode(PASSWORD))
                     .email(ADOP_EMAIL)
                     .role(ADOP_ROLE)
-                    .apps(getApp(ADOP_NAME))
                     .build();
 
             //create another user
@@ -68,32 +70,30 @@ public class Init {
                     .password(encoder.encode(PASSWORD))
                     .email(PUBLISHER_EMAIL)
                     .role(PUBLISHER_ROLE)
-                    .apps(getApp(PUBLISHER_NAME))
                     .build();
-
             //save
             List<User> users = Arrays.asList(admin, operator, publisher);
             userRepository.save(users);
+            saveUserInApp(Arrays.asList(operator, publisher));
         }
     }
 
-    private Set<App> getApp(final String name) {
-        Set<App> apps = new HashSet<>();
-        apps.add(App.builder()
-                .name("application " + name)
-                .type(AppType.IOS)
-                .contentTypes(getContentType())
-                .build());
-        return apps;
+    private void saveUserInApp(final List<User> users) {
+        List<App> apps = new ArrayList<>();
+        for (User user : users) {
+            apps.add(App.builder()
+                    .name("application " + user.getName())
+                    .type(AppType.IOS)
+                    .contentTypes(getContentType())
+                    .user(user)
+                    .build());
+        }
+        appRepository.save(apps);
     }
 
     private Set<ContentType> getContentType() {
-        Set<ContentType> contentTypes = new HashSet<>();
-        contentTypes.add(ContentType.VIDEO);
-        contentTypes.add(ContentType.HTML);
-        contentTypes.add(ContentType.IMAGE);
+        Set<ContentType> contentTypes = new HashSet<>(Arrays.asList(ContentType.values()));
 
-        return getContentType();
+        return contentTypes;
     }
-
 }
