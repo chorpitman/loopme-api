@@ -78,7 +78,7 @@ public class AppServiceImpl implements AppService {
         if (Objects.isNull(foundApp) || !isAppOwner(foundApp)) {
             return Boolean.FALSE;
         }
-        userRepository.delete(userId);
+        appRepository.delete(userId);
 
         return Boolean.TRUE;
     }
